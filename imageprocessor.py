@@ -23,10 +23,14 @@ class ImageProcessor(Frame):
       
 
         fileMenu = Menu(filebar)
+        editMenu = Menu(filebar)
         filebar.add_cascade(label="File", menu=fileMenu)
+        filebar.add_cascade(label= "Edit", menu=editMenu)
         
         fileMenu.add_command(label="Open", command=self.open_img)
         fileMenu.add_command(label="Save")
+        
+        editMenu.add_command(label="Undo")
 
                
 
