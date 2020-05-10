@@ -35,7 +35,8 @@ class ImageProcessor(Frame):
 
         imageMenu = Menu(filebar)
         filebar.add_cascade(label= "Image", menu= imageMenu)
-        imageMenu.add_command(label= "Rotate", command= self.rotate_img)
+        imageMenu.add_command(label= "Rotate Right", command= self.rotate_right_img)
+        imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
         imageMenu.add_command(label= "Resize")
          
 
@@ -63,9 +64,17 @@ class ImageProcessor(Frame):
         self.panel.pack(fill=BOTH, expand=True)
         self.panel.place(x = 0, y= 0)
 
-    def rotate_img(self):
+    def rotate_right_img(self):
 
         self.img = cv2.rotate(self.img, cv2.ROTATE_90_CLOCKWISE)
+        rotated = Image.fromarray(self.img)
+        rotated = ImageTk.PhotoImage(rotated)
+        self.panel.configure(image = rotated)
+        self.panel.image = rotated
+
+    def rotate_left_img(self):
+
+        self.img = cv2.rotate(self.img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         rotated = Image.fromarray(self.img)
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
