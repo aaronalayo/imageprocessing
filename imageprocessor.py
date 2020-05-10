@@ -27,7 +27,7 @@ class ImageProcessor(Frame):
         fileMenu = Menu(filebar)
         filebar.add_cascade(label="File", menu=fileMenu)
         fileMenu.add_command(label="Open", command=self.open_img)
-        fileMenu.add_command(label="Save")
+        fileMenu.add_command(label="Save", command =self.save_img)
 
         editMenu = Menu(filebar)
         filebar.add_cascade(label= "Edit", menu= editMenu)
@@ -49,36 +49,44 @@ class ImageProcessor(Frame):
 
 
     def open_img(self):
-        self.img = cv2.imread(self.openfn())
-        self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
+        self.cv2img = cv2.imread(self.openfn())
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
         scale_percent = 15 # percent of original size
-        width = int(self.img.shape[1] * scale_percent / 100)
-        height = int(self.img.shape[0] * scale_percent / 100)
+        width = int(self.cv2img.shape[1] * scale_percent / 100)
+        height = int(self.cv2img.shape[0] * scale_percent / 100)
         dim = (width, height)
-        self.img = cv2.resize(self.img, dim, interpolation = cv2.INTER_AREA)
-        image1 = Image.fromarray(self.img)
-        image1 = ImageTk.PhotoImage(image1)
-        self.panel = Label(root, image = image1)
-        self.panel.image = image1
+        self.cv2img = cv2.resize(self.cv2img, dim, interpolation = cv2.INTER_AREA)
+        image = Image.fromarray(self.cv2img)
+        image = ImageTk.PhotoImage(image)
+        self.panel = Label(root, image = image)
+        self.panel.image = image
         self.panel.pack(fill=BOTH, expand=True)
         self.panel.place(x = 0, y= 0)
 
     def rotate_right_img(self):
 
-        self.img = cv2.rotate(self.img, cv2.ROTATE_90_CLOCKWISE)
-        rotated = Image.fromarray(self.img)
+        self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_CLOCKWISE)
+        rotated = Image.fromarray(self.cv2img)
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
         self.panel.image = rotated
 
     def rotate_left_img(self):
 
-        self.img = cv2.rotate(self.img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        rotated = Image.fromarray(self.img)
+        self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        rotated = Image.fromarray(self.cv2img)
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
         self.panel.image = rotated
+
+    def save_img(self):
+        save_img = Image.fromarray(self.cv2img)
+        filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+        if filename is None:
+           return
+        save_img.save(filename)
+        
 
     def exitProgram(self):
         os._exit(0)
@@ -87,5 +95,5 @@ if __name__ == '__main__':
 
     root=Tk()
     ph=ImageProcessor(root)
-    root.geometry("500x500+200+500")
+    root.geometry("900x600")
     root.mainloop()
