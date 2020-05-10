@@ -1,11 +1,13 @@
 import tkinter as tk
-from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label
+import cv2
+from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Canvas
 from PIL import ImageTk, Image
 import os
 
 
 
 class ImageProcessor(Frame):
+
 
     def __init__(self, parent):
         Frame.__init__(self, parent)   
@@ -23,16 +25,19 @@ class ImageProcessor(Frame):
       
 
         fileMenu = Menu(filebar)
-        editMenu = Menu(filebar)
         filebar.add_cascade(label="File", menu=fileMenu)
-        filebar.add_cascade(label= "Edit", menu=editMenu)
-        
         fileMenu.add_command(label="Open", command=self.open_img)
         fileMenu.add_command(label="Save")
-        
+
+        editMenu = Menu(filebar)
+        filebar.add_cascade(label= "Edit", menu= editMenu)
         editMenu.add_command(label="Undo")
 
-               
+        imageMenu = Menu(filebar)
+        filebar.add_cascade(label= "Image", menu= imageMenu)
+        imageMenu.add_command(label= "Rotate", command= self.rotate_img)
+        imageMenu.add_command(label= "Resize")
+         
 
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
@@ -41,23 +46,31 @@ class ImageProcessor(Frame):
         filename = filedialog.askopenfilename(title='open')
         return filename
 
+
     def open_img(self):
-        x = self.openfn()
-        img = Image.open(x)
-        img = img.resize((500, 500), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
-        panel.image = img
-        panel.pack(fill=BOTH, expand=True)
-        panel.place(x = 0, y= 0)
-        
-        
+        self.img = cv2.imread(self.openfn())
+        self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
 
-        return x
- 
+        scale_percent = 15 # percent of original size
+        width = int(self.img.shape[1] * scale_percent / 100)
+        height = int(self.img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        self.img = cv2.resize(self.img, dim, interpolation = cv2.INTER_AREA)
+        image1 = Image.fromarray(self.img)
+        image1 = ImageTk.PhotoImage(image1)
+        self.panel = Label(root, image = image1)
+        self.panel.image = image1
+        self.panel.pack(fill=BOTH, expand=True)
+        self.panel.place(x = 0, y= 0)
 
-    
-        
+    def rotate_img(self):
+
+        self.img = cv2.rotate(self.img, cv2.ROTATE_90_CLOCKWISE)
+        rotated = Image.fromarray(self.img)
+        rotated = ImageTk.PhotoImage(rotated)
+        self.panel.configure(image = rotated)
+        self.panel.image = rotated
+
     def exitProgram(self):
         os._exit(0)
 
