@@ -2,6 +2,7 @@ import tkinter as tk
 import cv2
 from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Canvas
 from PIL import ImageTk, Image
+import numpy as np
 import os
 
 
@@ -38,7 +39,7 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Rotate Right", command= self.rotate_right_img)
         imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
         imageMenu.add_command(label= "Resize")
-         
+        imageMenu.add_command(label= "Face detection", command= self.face_detect)
 
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
@@ -52,7 +53,7 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
-        scale_percent = 15 # percent of original size
+        scale_percent = 50 # percent of original size
         width = int(self.cv2img.shape[1] * scale_percent / 100)
         height = int(self.cv2img.shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -87,6 +88,25 @@ class ImageProcessor(Frame):
            return
         save_img.save(filename)
         
+    def face_detect(self):
+        face_cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+       
+        gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
+
+
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        for (x, y, w, h) in faces:
+            self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            roi_gray = gray[y:y+h, x:x+w]
+            roi_color = self.cv2img[y:y+h, x:x+w]
+            # eyes = eye_cascade.detectMultiScale(roi_gray)
+            # for (ex,ey,ew,eh) in eyes:
+            # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+        cv2.imshow('Press esc to exit',self.cv2img)
+        cv2.waitKey() & 0xFF
+        cv2.destroyAllWindows()
 
     def exitProgram(self):
         os._exit(0)
