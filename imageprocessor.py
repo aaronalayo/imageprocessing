@@ -92,10 +92,10 @@ class ImageProcessor(Frame):
     def face_detect(self):
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
-        gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
+        self.gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
        
-        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
+        faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
             #roi_gray = gray[y:y+h, x:x+w]
@@ -109,7 +109,7 @@ class ImageProcessor(Frame):
         
     def crop_face(self):
         self.face_detect()
-        faces = self.face_cascade.detectMultiScale(self.cv2img, 1.3, 5)
+        faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         face_crop = []
         for f in faces:
@@ -120,7 +120,15 @@ class ImageProcessor(Frame):
 
         for face in face_crop:
             cv2.imshow('face',face)
-            cv2.waitKey(0)
+            k = cv2.waitKey(0) & 0xFF
+            if k == 27:         # wait for ESC key to exit
+                cv2.destroyAllWindows()
+            elif k == ord('s'): # wait for 's' key to save and exit
+                save_img = Image.fromarray(face)
+                filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+                save_img.save(filename)
+                cv2.destroyAllWindows()
+            #cv2.waitKey(0)
         
     def exitProgram(self):
         os._exit(0)
