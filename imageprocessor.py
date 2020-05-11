@@ -1,6 +1,6 @@
 import tkinter as tk
 import cv2
-from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Canvas
+from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Button
 from PIL import ImageTk, Image
 import numpy as np
 import os
@@ -40,7 +40,7 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
         imageMenu.add_command(label= "Resize")
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
-        imageMenu.add_command(label= "Crop Face", command= self.crop_face)
+        #imageMenu.add_command(label= "Crop Face", command= self.crop_face)
 
         
         self.txt = Text(self)
@@ -106,9 +106,11 @@ class ImageProcessor(Frame):
         faceimg = ImageTk.PhotoImage(faceimg)
         self.panel.configure(image = faceimg)
         self.panel.image = faceimg
+        btn = Button(root, text = 'Crop faces', bd = '5', 
+                          command = self.crop_face)
+        btn.pack(side = 'right')
         
     def crop_face(self):
-        self.face_detect()
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         face_crop = []
@@ -128,7 +130,6 @@ class ImageProcessor(Frame):
                 filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
                 save_img.save(filename)
                 cv2.destroyAllWindows()
-            #cv2.waitKey(0)
         
     def exitProgram(self):
         os._exit(0)
