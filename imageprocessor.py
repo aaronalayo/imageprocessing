@@ -103,12 +103,13 @@ class ImageProcessor(Frame):
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            roi_gray = gray[y:y+h, x:x+w]
-            roi_color = self.cv2img[y:y+h, x:x+w]
-       
-        cv2.imshow('Press esc to exit',self.cv2img)
-        cv2.waitKey() & 0xFF
-        cv2.destroyAllWindows()
+            # roi_gray = gray[y:y+h, x:x+w]
+            # roi_color = self.cv2img[y:y+h, x:x+w]
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+        faceimg = Image.fromarray(self.cv2img)
+        faceimg = ImageTk.PhotoImage(faceimg)
+        self.panel.configure(image = faceimg)
+        self.panel.image = faceimg
         
     def crop_face(self):
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
