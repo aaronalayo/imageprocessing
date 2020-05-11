@@ -40,7 +40,9 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
         imageMenu.add_command(label= "Resize")
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
+        imageMenu.add_command(label= "Crop Face", command= self.crop_face)
 
+        
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
     
@@ -48,6 +50,7 @@ class ImageProcessor(Frame):
         filename = filedialog.askopenfilename(title='open')
         return filename
 
+    
 
     def open_img(self):
         self.cv2img = cv2.imread(self.openfn())
@@ -89,25 +92,37 @@ class ImageProcessor(Frame):
         save_img.save(filename)
         
     def face_detect(self):
-        face_cascade = cv2.CascadeClassifier(
-        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        
+
         # eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
        
         gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
-
-
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+        faces = []
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = self.cv2img[y:y+h, x:x+w]
-            # eyes = eye_cascade.detectMultiScale(roi_gray)
-            # for (ex,ey,ew,eh) in eyes:
-            # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+       
         cv2.imshow('Press esc to exit',self.cv2img)
         cv2.waitKey() & 0xFF
         cv2.destroyAllWindows()
+        
+    def crop_face(self):
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        face_crop = []
+        for f in faces:
+            x, y, w, h = [ v for v in f ]
+            cv2.rectangle(self.cv2img, (x,y), (x+w, y+h), (255,0,0), 3)
+            # Define the region of interest in the image  
+            face_crop.append(self.cv2img[y:y+h, x:x+w])
 
+        for face in face_crop:
+            cv2.imshow('face',face)
+            cv2.waitKey(0)
+        
     def exitProgram(self):
         os._exit(0)
 
