@@ -50,13 +50,11 @@ class ImageProcessor(Frame):
         filename = filedialog.askopenfilename(title='open')
         return filename
 
-    
-
     def open_img(self):
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
-        scale_percent = 50 # percent of original size
+        scale_percent = 15 # percent of original size
         width = int(self.cv2img.shape[1] * scale_percent / 100)
         height = int(self.cv2img.shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -92,30 +90,31 @@ class ImageProcessor(Frame):
         save_img.save(filename)
         
     def face_detect(self):
-        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
-
-        # eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-       
         gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-        faces = []
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+       
+        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            roi_gray = gray[y:y+h, x:x+w]
-            roi_color = self.cv2img[y:y+h, x:x+w]
-       
-        cv2.imshow('Press esc to exit',self.cv2img)
-        cv2.waitKey() & 0xFF
-        cv2.destroyAllWindows()
+            #roi_gray = gray[y:y+h, x:x+w]
+            #roi_color = self.cv2img[y:y+h, x:x+w]
+        
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+        faceimg = Image.fromarray(self.cv2img)
+        faceimg = ImageTk.PhotoImage(faceimg)
+        self.panel.configure(image = faceimg)
+        self.panel.image = faceimg
         
     def crop_face(self):
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        self.face_detect()
+        faces = self.face_cascade.detectMultiScale(self.cv2img, 1.3, 5)
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         face_crop = []
         for f in faces:
             x, y, w, h = [ v for v in f ]
-            cv2.rectangle(self.cv2img, (x,y), (x+w, y+h), (255,0,0), 3)
+            #cv2.rectangle(self.cv2img, (x,y), (x+w, y+h), (255,0,0), 3)
             # Define the region of interest in the image  
             face_crop.append(self.cv2img[y:y+h, x:x+w])
 
