@@ -40,6 +40,9 @@ class ImageProcessor(Frame):
 
         self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
         self.btn.pack_forget()
+
+        self.panel = Label(root)
+        self.panel.place(relx=.5, rely=.5, anchor="c")
         
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
@@ -72,11 +75,9 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.resize(self.cv2img, dim, interpolation = cv2.INTER_AREA)
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
-        self.panel = Label(root, image = image)
+    
+        self.panel.configure(image = image)
         self.panel.image = image
-        self.panel.place(relx=.5, rely=.5, anchor="c")
-        #self.panel.pack(fill=BOTH, expand=True)
-        #self.panel.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def rotate_right_img(self):
 
@@ -138,6 +139,7 @@ class ImageProcessor(Frame):
             if k == 27:         # wait for ESC key to exit
                 cv2.destroyAllWindows()
             elif k == ord('s'): # wait for 's' key to save and exit
+                face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
                 save_img = Image.fromarray(face)
                 filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
                 save_img.save(filename)
