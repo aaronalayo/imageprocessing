@@ -111,7 +111,6 @@ class ImageProcessor(Frame):
         self.panel.image = faceimg
         
         self.btn.pack(side = 'right')
-        #self.btn.place
         
     def crop_face(self):
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
@@ -125,6 +124,7 @@ class ImageProcessor(Frame):
 
         for face in face_crop:
             cv2.imshow('face',face)
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
             k = cv2.waitKey(0) & 0xFF
             if k == 27:         # wait for ESC key to exit
                 cv2.destroyAllWindows()
@@ -133,6 +133,7 @@ class ImageProcessor(Frame):
                 filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
                 save_img.save(filename)
                 cv2.destroyAllWindows()
+            
         
     def exitProgram(self):
         os._exit(0)
