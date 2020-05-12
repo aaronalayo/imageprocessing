@@ -42,7 +42,10 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
         #imageMenu.add_command(label= "Crop Face", command= self.crop_face)
 
-        
+
+        self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
+        self.btn.pack_forget()
+        #self.btn.pack(side = 'right')
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
     
@@ -106,9 +109,9 @@ class ImageProcessor(Frame):
         faceimg = ImageTk.PhotoImage(faceimg)
         self.panel.configure(image = faceimg)
         self.panel.image = faceimg
-        btn = Button(root, text = 'Crop faces', bd = '5', 
-                          command = self.crop_face)
-        btn.pack(side = 'right')
+        
+        self.btn.pack(side = 'right')
+        #self.btn.place
         
     def crop_face(self):
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
