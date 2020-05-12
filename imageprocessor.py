@@ -9,7 +9,6 @@ import os
 
 class ImageProcessor(Frame):
 
-
     def __init__(self, parent):
         Frame.__init__(self, parent)   
 
@@ -24,7 +23,6 @@ class ImageProcessor(Frame):
         filebar = Menu(self.parent)
         self.parent.config(menu=filebar)
       
-
         fileMenu = Menu(filebar)
         filebar.add_cascade(label="File", menu=fileMenu)
         fileMenu.add_command(label="Open", command=self.open_img)
@@ -40,8 +38,9 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
         imageMenu.add_command(label= "Resize")
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
-        #imageMenu.add_command(label= "Crop Face", command= self.crop_face)
 
+        self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
+        self.btn.pack_forget()
         
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
@@ -63,8 +62,9 @@ class ImageProcessor(Frame):
         image = ImageTk.PhotoImage(image)
         self.panel = Label(root, image = image)
         self.panel.image = image
+        self.panel.place(relx=.5, rely=.5, anchor="c")
         self.panel.pack(fill=BOTH, expand=True)
-        self.panel.place(x = 0, y= 0)
+        #self.panel.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def rotate_right_img(self):
 
@@ -106,9 +106,8 @@ class ImageProcessor(Frame):
         faceimg = ImageTk.PhotoImage(faceimg)
         self.panel.configure(image = faceimg)
         self.panel.image = faceimg
-        btn = Button(root, text = 'Crop faces', bd = '5', 
-                          command = self.crop_face)
-        btn.pack(side = 'right')
+        
+        self.btn.pack(side = 'right')
         
     def crop_face(self):
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
@@ -122,6 +121,7 @@ class ImageProcessor(Frame):
 
         for face in face_crop:
             cv2.imshow('face',face)
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
             k = cv2.waitKey(0) & 0xFF
             if k == 27:         # wait for ESC key to exit
                 cv2.destroyAllWindows()
@@ -130,6 +130,7 @@ class ImageProcessor(Frame):
                 filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
                 save_img.save(filename)
                 cv2.destroyAllWindows()
+            
         
     def exitProgram(self):
         os._exit(0)
