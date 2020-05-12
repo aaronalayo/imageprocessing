@@ -53,7 +53,7 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
-        scale_percent = 15 # percent of original size
+        scale_percent = 50 # percent of original size
         width = int(self.cv2img.shape[1] * scale_percent / 100)
         height = int(self.cv2img.shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -120,7 +120,7 @@ class ImageProcessor(Frame):
             face_crop.append(self.cv2img[y:y+h, x:x+w])
 
         for face in face_crop:
-            cv2.imshow('face',face)
+            cv2.imshow('Press s to save cropped image',face)
             self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
             k = cv2.waitKey(0) & 0xFF
             if k == 27:         # wait for ESC key to exit
