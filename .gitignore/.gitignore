@@ -11,7 +11,7 @@ __pycache__/
 *.jpeg
 *.png
 
-# Distribution / packaging
+# Distribution / packagingconvert_dithering
 .Python
 build/
 develop-eggs/

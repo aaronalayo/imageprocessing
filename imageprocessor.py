@@ -4,8 +4,7 @@ from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Button
 from PIL import ImageTk, Image
 import numpy as np
 import os
-
-
+import filters
 
 class ImageProcessor(Frame):
 
@@ -44,7 +43,20 @@ class ImageProcessor(Frame):
         
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
+        
+        filtersMenu = Menu(filebar)
+        filebar.add_cascade(label= "Filters", menu= filtersMenu)
+        filtersMenu.add_command(label= "Dither", command= self.call_filters_ditter)
     
+    def call_filters_ditter(self):
+        image = Image.fromarray(self.cv2img)
+        im = filters.convert_dithering(image)
+        img = ImageTk.PhotoImage(im)
+        self.panel.configure(image = img)
+        self.panel.image = img
+        
+        
+        
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
         return filename
