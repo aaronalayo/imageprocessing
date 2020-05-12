@@ -63,7 +63,7 @@ class ImageProcessor(Frame):
         self.panel = Label(root, image = image)
         self.panel.image = image
         self.panel.place(relx=.5, rely=.5, anchor="c")
-        self.panel.pack(fill=BOTH, expand=True)
+        #self.panel.pack(fill=BOTH, expand=True)
         #self.panel.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def rotate_right_img(self):
