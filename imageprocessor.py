@@ -38,27 +38,20 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label= "Resize")
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
 
+        filtersMenu = Menu(filebar)
+        filebar.add_cascade(label= "Filters", menu= filtersMenu)
+        filtersMenu.add_command(label= "Dither", command= self.call_filters_ditter)
+
         self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
         self.btn.pack_forget()
 
         self.panel = Label(root)
         self.panel.place(relx=.5, rely=.5, anchor="c")
         
+        
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
-        
-        filtersMenu = Menu(filebar)
-        filebar.add_cascade(label= "Filters", menu= filtersMenu)
-        filtersMenu.add_command(label= "Dither", command= self.call_filters_ditter)
-    
-    def call_filters_ditter(self):
-        image = Image.fromarray(self.cv2img)
-        im = filters.convert_dithering(image)
-        img = ImageTk.PhotoImage(im)
-        self.panel.configure(image = img)
-        self.panel.image = img
-        
-        
+
         
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
@@ -68,11 +61,13 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
-        scale_percent = 50 # percent of original size
-        width = int(self.cv2img.shape[1] * scale_percent / 100)
-        height = int(self.cv2img.shape[0] * scale_percent / 100)
-        dim = (width, height)
-        self.cv2img = cv2.resize(self.cv2img, dim, interpolation = cv2.INTER_AREA)
+        width_original = int(self.cv2img.shape[1])
+        height_original = int(self.cv2img.shape[0])
+        aspectRatio = width_original/height_original
+        height_new = 500
+        width_new = int(height_new*aspectRatio)
+        dim = (width_new, height_new)
+        self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
     
@@ -94,6 +89,14 @@ class ImageProcessor(Frame):
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
         self.panel.image = rotated
+
+    def call_filters_ditter(self):
+        self.cv2img = filters.convert_dithering(self.cv2img)
+        filtered = Image.fromarray(self.cv2img)
+        filtered = ImageTk.PhotoImage(filtered)
+        self.panel.configure(image = filtered)
+        self.panel.image = filtered
+        
 
     def save_img(self):
         save_img = Image.fromarray(self.cv2img)
