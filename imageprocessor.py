@@ -35,7 +35,7 @@ class ImageProcessor(Frame):
         filebar.add_cascade(label= "Image", menu= imageMenu)
         imageMenu.add_command(label= "Rotate Right", command= self.rotate_right_img)
         imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
-        imageMenu.add_command(label= "Resize")
+        imageMenu.add_command(label= "Crop 4:3", command= self.crop_img)
         imageMenu.add_command(label= "Face detection", command= self.face_detect)
 
         filtersMenu = Menu(filebar)
@@ -148,6 +148,13 @@ class ImageProcessor(Frame):
                 save_img.save(filename)
                 cv2.destroyAllWindows()
             
+    def crop_img(self):
+        self.cv2img = self.cv2img[0:400, 0:300]
+        crop_image = Image.fromarray(self.cv2img)
+        crop_image = ImageTk.PhotoImage(crop_image)
+        self.panel.configure(image = crop_image)
+        self.panel.image = crop_image
+
         
     def exitProgram(self):
         os._exit(0)
