@@ -41,6 +41,9 @@ class ImageProcessor(Frame):
         filtersMenu = Menu(filebar)
         filebar.add_cascade(label= "Filters", menu= filtersMenu)
         filtersMenu.add_command(label= "Dither", command= self.call_filters_ditter)
+        filtersMenu.add_command(label= "Gray Scale", command= self.call_convert_grayscale)
+        filtersMenu.add_command(label= "Primary", command= self.call_convert_primary)
+
 
         self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
         self.btn.pack_forget()
@@ -64,7 +67,7 @@ class ImageProcessor(Frame):
         width_original = int(self.cv2img.shape[1])
         height_original = int(self.cv2img.shape[0])
         aspectRatio = width_original/height_original
-        height_new = 500
+        height_new = 300
         width_new = int(height_new*aspectRatio)
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
@@ -91,11 +94,34 @@ class ImageProcessor(Frame):
         self.panel.image = rotated
 
     def call_filters_ditter(self):
-        self.cv2img = filters.convert_dithering(self.cv2img)
-        filtered = Image.fromarray(self.cv2img)
-        filtered = ImageTk.PhotoImage(filtered)
-        self.panel.configure(image = filtered)
-        self.panel.image = filtered
+        image = Image.fromarray(self.cv2img)
+        im = filters.convert_dithering(image)
+        img = ImageTk.PhotoImage(im)
+        self.panel.configure(image = img)
+        self.panel.image = img
+        # # Convert RGB to BGR 
+        self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
+        self.cv2img = self.cv2img[:, :, ::-1]
+        
+    def call_convert_grayscale(self):
+        image = Image.fromarray(self.cv2img)
+        im = filters.convert_grayscale(image)
+        img = ImageTk.PhotoImage(im)
+        self.panel.configure(image = img)
+        self.panel.image = img
+        # # Convert RGB to BGR 
+        self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
+        self.cv2img = self.cv2img[:, :, ::-1]
+        
+    def call_convert_primary(self):
+        image = Image.fromarray(self.cv2img)
+        im = filters.convert_primary(image)
+        img = ImageTk.PhotoImage(im)
+        self.panel.configure(image = img)
+        self.panel.image = img
+        # # Convert RGB to BGR 
+        self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
+        self.cv2img = self.cv2img[:, :, ::-1]
         
 
     def save_img(self):
@@ -149,7 +175,7 @@ class ImageProcessor(Frame):
                 cv2.destroyAllWindows()
             
     def crop_img(self):
-        self.cv2img = self.cv2img[0:400, 0:300]
+        self.cv2img = self.cv2img[0:300, 0:400]
         crop_image = Image.fromarray(self.cv2img)
         crop_image = ImageTk.PhotoImage(crop_image)
         self.panel.configure(image = crop_image)
@@ -163,5 +189,5 @@ if __name__ == '__main__':
 
     root=Tk()
     ph=ImageProcessor(root)
-    root.geometry("900x600")
+    root.geometry("1920x1080")
     root.mainloop()

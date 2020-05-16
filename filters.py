@@ -3,15 +3,15 @@ from PIL import Image
 import tkinter as tk
 
 
-# path = '~/kea/python/dk.kea.dat18.python/temp'
+# path = '~/kea/python/imageprocessing/'
 # Open an Image
-def open_image(path):
-    newImage = Image.open(path)
-    return newImage
+# def open_image(path):
+#     newImage = Image.open(path)
+#     return newImage
 
 # Save Image
-def save_image(image, path):
-    image.save(path, 'png')
+# def save_image(image, path):
+#     image.save(path, 'png')
 
 
 # Create a new image with the given size
@@ -187,7 +187,7 @@ def convert_dithering(image):
             pixels[i + 1, j + 1] = (r[3], g[3], b[3])
     
     # Return new image
-    save_image(new, 'Prinny_dither.png')
+    # save_image(new, 'Prinny_dither.png')
     return new
 
 
@@ -235,16 +235,16 @@ def convert_primary(image):
 # Main
 # if __name__ == "__main__":
     # Load Image (JPEG/JPG needs libjpeg to load)
-    # original = open_image('3806.jpg')
+    # original = open_image('mario.png')
 
-    # # Example Pixel Color
+    # Example Pixel Color
     # print('Color: ' + str(get_pixel(original, 0, 0)))
 
     # # Convert to Grayscale and save
     # new = convert_grayscale(original)
     # save_image(new, 'Prinny_gray.png')
 
-    # # Convert to Halftoning and save
+    # Convert to Halftoning and save
     # new = convert_halftoning(original)
     # save_image(new, 'Prinny_half.png')
 
