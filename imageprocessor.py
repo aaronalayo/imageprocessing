@@ -64,7 +64,6 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
-        width_original = int(self.cv2img.shape[1])
         height_original = int(self.cv2img.shape[0])
         aspectRatio = width_original/height_original
         height_new = 300
