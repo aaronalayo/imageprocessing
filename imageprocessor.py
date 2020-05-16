@@ -44,6 +44,8 @@ class ImageProcessor(Frame):
         filtersMenu.add_command(label= "Gray Scale", command= self.call_convert_grayscale)
         filtersMenu.add_command(label= "Primary", command= self.call_convert_primary)
 
+        filebar.add_cascade(label="Original image", command=self.show_original_img)
+
 
         self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
         self.btn.pack_forget()
@@ -70,9 +72,16 @@ class ImageProcessor(Frame):
         height_new = int(self.cv2img.shape[0] * scale_percent)
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
+        self.original = self.cv2img.copy()
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
     
+        self.panel.configure(image = image)
+        self.panel.image = image
+    
+    def show_original_img(self):
+        image = Image.fromarray(self.original)
+        image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
 
