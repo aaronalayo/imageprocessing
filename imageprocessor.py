@@ -65,9 +65,9 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
         height_original = int(self.cv2img.shape[0])
-        aspectRatio = width_original/height_original
-        height_new = 300
-        width_new = int(height_new*aspectRatio)
+        scale_percent = 500/height_original 
+        width_new = int(self.cv2img.shape[1] * scale_percent)
+        height_new = int(self.cv2img.shape[0] * scale_percent)
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
         image = Image.fromarray(self.cv2img)
