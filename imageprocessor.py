@@ -172,6 +172,8 @@ class ImageProcessor(Frame):
                 filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
                 save_img.save(filename)
                 cv2.destroyAllWindows()
+        self.btn.pack_forget()
+
             
     def crop_img(self):
         self.cv2img = self.cv2img[0:300, 0:400]
