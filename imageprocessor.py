@@ -29,7 +29,7 @@ class ImageProcessor(Frame):
 
         editMenu = Menu(filebar)
         filebar.add_cascade(label= "Edit", menu= editMenu)
-        editMenu.add_command(label="Undo")
+        editMenu.add_command(label="Undo", command = self.undo)
 
         imageMenu = Menu(filebar)
         filebar.add_cascade(label= "Image", menu= imageMenu)
@@ -57,7 +57,18 @@ class ImageProcessor(Frame):
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
 
-        
+        self.states=[]
+
+    
+    def undo(self):
+        self.cv2img = self.states[-2]
+        image = Image.fromarray(self.cv2img)
+        image = ImageTk.PhotoImage(image)
+        self.panel.configure(image = image)
+        self.panel.image = image
+        del self.states[-1]
+
+
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
         return filename
@@ -78,9 +89,11 @@ class ImageProcessor(Frame):
     
         self.panel.configure(image = image)
         self.panel.image = image
+        self.states.append(self.cv2img)
     
     def show_original_img(self):
-        image = Image.fromarray(self.original)
+        self.cv2img = self.original
+        image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
@@ -92,6 +105,8 @@ class ImageProcessor(Frame):
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
         self.panel.image = rotated
+        self.states.append(self.cv2img)
+        
 
     def rotate_left_img(self):
 
@@ -100,6 +115,7 @@ class ImageProcessor(Frame):
         rotated = ImageTk.PhotoImage(rotated)
         self.panel.configure(image = rotated)
         self.panel.image = rotated
+        self.states.append(self.cv2img)
 
     def call_filters_ditter(self):
         image = Image.fromarray(self.cv2img)
@@ -110,6 +126,7 @@ class ImageProcessor(Frame):
         # # Convert RGB to BGR 
         self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
         self.cv2img = self.cv2img[:, :, ::-1]
+        self.states.append(self.cv2img)
         
     def call_convert_grayscale(self):
         image = Image.fromarray(self.cv2img)
@@ -120,6 +137,7 @@ class ImageProcessor(Frame):
         # # Convert RGB to BGR 
         self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
         self.cv2img = self.cv2img[:, :, ::-1]
+        self.states.append(self.cv2img)
         
     def call_convert_primary(self):
         image = Image.fromarray(self.cv2img)
@@ -130,6 +148,7 @@ class ImageProcessor(Frame):
         # # Convert RGB to BGR 
         self.cv2img = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
         self.cv2img = self.cv2img[:, :, ::-1]
+        self.states.append(self.cv2img)
         
 
     def save_img(self):
@@ -158,6 +177,7 @@ class ImageProcessor(Frame):
         self.panel.image = faceimg
         
         self.btn.pack(side = 'right')
+        self.states.append(self.cv2img)
         
     def crop_face(self):
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
@@ -190,6 +210,7 @@ class ImageProcessor(Frame):
         crop_image = ImageTk.PhotoImage(crop_image)
         self.panel.configure(image = crop_image)
         self.panel.image = crop_image
+        self.states.append(self.cv2img)
 
         
     def exitProgram(self):
