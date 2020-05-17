@@ -4,12 +4,12 @@ import tkinter as tk
 
 
 # path = '~/kea/python/imageprocessing/'
-# Open an Image
+# # Open an Image
 # def open_image(path):
 #     newImage = Image.open(path)
 #     return newImage
 
-# Save Image
+# # Save Image
 # def save_image(image, path):
 #     image.save(path, 'png')
 
@@ -59,64 +59,6 @@ def convert_grayscale(image):
 
             # Set Pixel in new image
             pixels[i, j] = (int(gray), int(gray), int(gray))
-
-    # Return new image
-    return new
-
-
-# Create a Half-tone version of the image
-def convert_halftoning(image):
-    # Get size
-    width, height = image.size
-
-    # Create new Image and a Pixel Map
-    new = create_image(width, height)
-    pixels = new.load()
-
-    # Transform to half tones
-    for i in range(0, width, 2):
-        for j in range(0, height, 2):
-            # Get Pixels
-            p1 = get_pixel(image, i, j)
-            p2 = get_pixel(image, i, j + 1)
-            p3 = get_pixel(image, i + 1, j)
-            p4 = get_pixel(image, i + 1, j + 1)
-
-            # Transform to grayscale
-        gray1 = (p1[0] * 0.299) + (p1[1] * 0.587) + (p1[2] * 0.114)
-        gray2 = (p2[0] * 0.299) + (p2[1] * 0.587) + (p2[2] * 0.114)
-        gray3 = (p3[0] * 0.299) + (p3[1] * 0.587) + (p3[2] * 0.114)
-        gray4 = (p4[0] * 0.299) + (p4[1] * 0.587) + (p4[2] * 0.114)
-
-          # Saturation Percentage
-        sat = (gray1 + gray2 + gray3 + gray4) / 4
-
-           # Draw white/black depending on saturation
-        if sat > 223:
-            pixels[i, j] = (255, 255, 255)  # White
-            pixels[i, j + 1] = (255, 255, 255)  # White
-            pixels[i + 1, j] = (255, 255, 255)  # White
-            pixels[i + 1, j + 1] = (255, 255, 255)  # White
-        elif sat > 159:
-            pixels[i, j] = (255, 255, 255)  # White
-            pixels[i, j + 1] = (0, 0, 0)       # Black
-            pixels[i + 1, j] = (255, 255, 255)  # White
-            pixels[i + 1, j + 1] = (255, 255, 255)  # White
-        elif sat > 95:
-            pixels[i, j] = (255, 255, 255)  # White
-            pixels[i, j + 1] = (0, 0, 0)       # Black
-            pixels[i + 1, j] = (0, 0, 0)       # Black
-            pixels[i + 1, j + 1] = (255, 255, 255)  # White
-        elif sat > 32:
-            pixels[i, j] = (0, 0, 0)       # Black
-            pixels[i, j + 1] = (255, 255, 255)  # White
-            pixels[i + 1, j] = (0, 0, 0)       # Black
-            pixels[i + 1, j + 1] = (0, 0, 0)       # Black
-        else:
-            pixels[i, j] = (0, 0, 0)       # Black
-            pixels[i, j + 1] = (0, 0, 0)       # Black
-            pixels[i + 1, j] = (0, 0, 0)       # Black
-            pixels[i + 1, j + 1] = (0, 0, 0)       # Black
 
     # Return new image
     return new
@@ -234,24 +176,24 @@ def convert_primary(image):
 
 # Main
 # if __name__ == "__main__":
-    # Load Image (JPEG/JPG needs libjpeg to load)
-    # original = open_image('mario.png')
+#     # Load Image (JPEG/JPG needs libjpeg to load)
+#     original = open_image('mario.png')
 
-    # Example Pixel Color
-    # print('Color: ' + str(get_pixel(original, 0, 0)))
+#     # Example Pixel Color
+#     print('Color: ' + str(get_pixel(original, 0, 0)))
 
-    # # Convert to Grayscale and save
-    # new = convert_grayscale(original)
-    # save_image(new, 'Prinny_gray.png')
+#     # Convert to Grayscale and save
+#     new = convert_grayscale(original)
+#     save_image(new, 'Prinny_gray.png')
 
-    # Convert to Halftoning and save
-    # new = convert_halftoning(original)
-    # save_image(new, 'Prinny_half.png')
+#     # Convert to Halftoning and save
+#     new = convert_halftoning(original)
+#     save_image(new, 'Prinny_half.png')
 
-    # Convert to Dithering and save
-    # new = convert_dithering(original)
-    # save_image(new, 'Prinny_dither.png')
+#     # Convert to Dithering and save
+#     new = convert_dithering(original)
+#     save_image(new, 'Prinny_dither.png')
 
-    # # Convert to Primary and save
-    # new = convert_primary(original)
-    # save_image(new, 'Prinny_primary.png')
+#     # Convert to Primary and save
+#     new = convert_primary(original)
+#     save_image(new, 'Prinny_primary.png')

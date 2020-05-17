@@ -7,15 +7,24 @@ import os
 import filters
 
 class ImageProcessor(Frame):
+    """App to manipulate an image by adding filters, 
+    face detection, cropping and rotation.
+    Also and Undo button to reverse actions.
+    It uses OpenCV image format and ImageTk from Pillow.
+    Arguments:
+        Frame {[type]} -- [description]
+    """
 
     def __init__(self, parent):
         Frame.__init__(self, parent)   
 
         self.parent = parent        
         self.initUI()
-
+        
+    # Initiates the UI 
     def initUI(self):
-
+        """[summary]
+        """
         self.parent.title("Image Processor")
         self.pack(fill=BOTH, expand=1)
 
@@ -26,6 +35,7 @@ class ImageProcessor(Frame):
         filebar.add_cascade(label="File", menu=fileMenu)
         fileMenu.add_command(label="Open", command=self.open_img)
         fileMenu.add_command(label="Save", command =self.save_img)
+        fileMenu.add_command(label="Quit", command =self.exitProgram)
 
         editMenu = Menu(filebar)
         filebar.add_cascade(label= "Edit", menu= editMenu)
@@ -59,8 +69,10 @@ class ImageProcessor(Frame):
 
         self.states=[]
 
-    
+    # Method to undo an action applied to an image
     def undo(self):
+        """[summary]
+        """
         self.cv2img = self.states[-2]
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
@@ -73,7 +85,10 @@ class ImageProcessor(Frame):
         filename = filedialog.askopenfilename(title='open')
         return filename
 
+    # Opens an image and displays it on the panel
     def open_img(self):
+        """[summary]
+        """
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
 
@@ -84,22 +99,28 @@ class ImageProcessor(Frame):
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
         self.original = self.cv2img.copy()
+        # Converts image from OpenCV to Pil Image
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
     
         self.panel.configure(image = image)
         self.panel.image = image
         self.states.append(self.cv2img)
-    
+        
+    # Shows original image
     def show_original_img(self):
+        """[summary]
+        """
         self.cv2img = self.original
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
-
+        
+    # Rotates the image 90 degrees clockwise
     def rotate_right_img(self):
-
+        """[summary]
+        """
         self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_CLOCKWISE)
         rotated = Image.fromarray(self.cv2img)
         rotated = ImageTk.PhotoImage(rotated)
@@ -109,7 +130,8 @@ class ImageProcessor(Frame):
         
 
     def rotate_left_img(self):
-
+        """[summary]
+        """
         self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         rotated = Image.fromarray(self.cv2img)
         rotated = ImageTk.PhotoImage(rotated)
@@ -118,6 +140,8 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
 
     def call_filters_ditter(self):
+        """[summary]
+        """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_dithering(image)
         img = ImageTk.PhotoImage(im)
@@ -129,6 +153,8 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
         
     def call_convert_grayscale(self):
+        """[summary]
+        """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_grayscale(image)
         img = ImageTk.PhotoImage(im)
@@ -140,6 +166,8 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
         
     def call_convert_primary(self):
+        """[summary]
+        """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_primary(image)
         img = ImageTk.PhotoImage(im)
@@ -152,6 +180,8 @@ class ImageProcessor(Frame):
         
 
     def save_img(self):
+        """[summary]
+        """
         save_img = Image.fromarray(self.cv2img)
         filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
         if filename is None:
@@ -159,6 +189,8 @@ class ImageProcessor(Frame):
         save_img.save(filename)
         
     def face_detect(self):
+        """[summary]
+        """
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
         self.gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
@@ -180,6 +212,8 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
         
     def crop_face(self):
+        """[summary]
+        """
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         face_crop = []
@@ -205,6 +239,8 @@ class ImageProcessor(Frame):
 
             
     def crop_img(self):
+        """[summary]
+        """
         self.cv2img = self.cv2img[0:300, 0:400]
         crop_image = Image.fromarray(self.cv2img)
         crop_image = ImageTk.PhotoImage(crop_image)
@@ -214,11 +250,14 @@ class ImageProcessor(Frame):
 
         
     def exitProgram(self):
+        """[summary]
+        """
         os._exit(0)
-
+        
+        
 if __name__ == '__main__':
 
     root=Tk()
     ph=ImageProcessor(root)
-    root.geometry("1920x1080")
+    root.geometry("1920x1060")
     root.mainloop()
