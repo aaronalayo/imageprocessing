@@ -117,6 +117,8 @@ class ImageProcessor(Frame):
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
+        self.states.append(self.cv2img)
+
         
     
     def rotate_right_img(self):
