@@ -199,8 +199,6 @@ class ImageProcessor(Frame):
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            #roi_gray = gray[y:y+h, x:x+w]
-            #roi_color = self.cv2img[y:y+h, x:x+w]
         
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         faceimg = Image.fromarray(self.cv2img)
@@ -219,7 +217,7 @@ class ImageProcessor(Frame):
         face_crop = []
         for f in faces:
             x, y, w, h = [ v for v in f ]
-            #cv2.rectangle(self.cv2img, (x,y), (x+w, y+h), (255,0,0), 3)
+            
             # Define the region of interest in the image  
             face_crop.append(self.cv2img[y:y+h, x:x+w])
 
