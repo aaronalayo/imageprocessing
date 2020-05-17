@@ -7,12 +7,10 @@ import os
 import filters
 
 class ImageProcessor(Frame):
-    """App to manipulate an image by adding filters, 
-    face detection, cropping and rotation.
-    Also and Undo button to reverse actions.
-    It uses OpenCV image format and ImageTk from Pillow.
+    """Image processor app 
+    features: Open, Save, Quit, Undo, Add filters, Manipulate Image, Face detection 
     Arguments:
-        Frame {[type]} -- [description]
+        Frame {[Tkinter]} -- [description]
     """
 
     def __init__(self, parent):
@@ -54,6 +52,7 @@ class ImageProcessor(Frame):
         filtersMenu.add_command(label= "Gray Scale", command= self.call_convert_grayscale)
         filtersMenu.add_command(label= "Primary", command= self.call_convert_primary)
 
+     
         filebar.add_cascade(label="Original image", command=self.show_original_img)
 
 
@@ -111,6 +110,7 @@ class ImageProcessor(Frame):
     def show_original_img(self):
         """[summary]
         """
+        print("method called")
         self.cv2img = self.original
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
