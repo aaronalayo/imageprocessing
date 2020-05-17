@@ -19,9 +19,9 @@ class ImageProcessor(Frame):
         self.parent = parent        
         self.initUI()
         
-    # Initiates the UI 
+      
     def initUI(self):
-        """[summary]
+        """Initiates the UI
         """
         self.parent.title("Image Processor")
         self.pack(fill=BOTH, expand=1)
@@ -52,9 +52,7 @@ class ImageProcessor(Frame):
         filtersMenu.add_command(label= "Gray Scale", command= self.call_convert_grayscale)
         filtersMenu.add_command(label= "Primary", command= self.call_convert_primary)
 
-     
         filebar.add_cascade(label="Original image", command=self.show_original_img)
-
 
         self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
         self.btn.pack_forget()
@@ -68,9 +66,10 @@ class ImageProcessor(Frame):
 
         self.states=[]
 
-    # Method to undo an action applied to an image
+    
     def undo(self):
-        """[summary]
+        """Method to undo an action applied to an image
+        It changes the image to its previous state which is saved in a list.
         """
         self.cv2img = self.states[-2]
         image = Image.fromarray(self.cv2img)
@@ -84,9 +83,11 @@ class ImageProcessor(Frame):
         filename = filedialog.askopenfilename(title='open')
         return filename
 
-    # Opens an image and displays it on the panel
+   
     def open_img(self):
-        """[summary]
+        """Opens an image and displays it on the panel
+        It takes an image in OpenCV format, resizes it to fit the panel and converts it to 
+        Pil Image and then displays it by configuring the panel 
         """
         self.cv2img = cv2.imread(self.openfn())
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
@@ -97,29 +98,29 @@ class ImageProcessor(Frame):
         height_new = int(self.cv2img.shape[0] * scale_percent)
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
-        self.original = self.cv2img.copy()
         # Converts image from OpenCV to Pil Image
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
-    
         self.panel.configure(image = image)
         self.panel.image = image
+
+        #appends current image state to the list
         self.states.append(self.cv2img)
         
-    # Shows original image
+    
     def show_original_img(self):
-        """[summary]
+        """Shows original image
+        It changes the image to its first state
         """
-        print("method called")
-        self.cv2img = self.original
+        self.cv2img = self.states[0]
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
         
-    # Rotates the image 90 degrees clockwise
+    
     def rotate_right_img(self):
-        """[summary]
+        """Rotates the image 90 degrees clockwise
         """
         self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_CLOCKWISE)
         rotated = Image.fromarray(self.cv2img)
@@ -130,7 +131,7 @@ class ImageProcessor(Frame):
         
 
     def rotate_left_img(self):
-        """[summary]
+        """Rotates the image 90 degrees counterclockwise
         """
         self.cv2img = cv2.rotate(self.cv2img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         rotated = Image.fromarray(self.cv2img)
@@ -140,7 +141,7 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
 
     def call_filters_ditter(self):
-        """[summary]
+        """Calls the method convert_dithering in filters.py which returns a Pil dithered image
         """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_dithering(image)
@@ -153,7 +154,7 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
         
     def call_convert_grayscale(self):
-        """[summary]
+        """Calls the method convert_grayscale in filters.py which returns a Pil grayscaled image
         """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_grayscale(image)
@@ -166,7 +167,8 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
         
     def call_convert_primary(self):
-        """[summary]
+        """Calls the method convert_primary in filters.py 
+        which returns a Pil image with only primary colors
         """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_primary(image)
@@ -180,7 +182,7 @@ class ImageProcessor(Frame):
         
 
     def save_img(self):
-        """[summary]
+        """Saves the image in jpg to the hard drive
         """
         save_img = Image.fromarray(self.cv2img)
         filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
@@ -189,13 +191,15 @@ class ImageProcessor(Frame):
         save_img.save(filename)
         
     def face_detect(self):
-        """[summary]
+        """Detects faces on the image and creates a rectangle around each of them 
         """
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
         self.gray = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2GRAY)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
        
+        # create an array of the positions of each face 
+        # and then iterates through it to draw a rectangle around all faces
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         for (x, y, w, h) in faces:
             self.cv2img = cv2.rectangle(self.cv2img, (x, y), (x+w, y+h), (255, 0, 0), 2)
@@ -206,11 +210,14 @@ class ImageProcessor(Frame):
         self.panel.configure(image = faceimg)
         self.panel.image = faceimg
         
+        #makes the button for crop faces visible
         self.btn.pack(side = 'right')
+
         self.states.append(self.cv2img)
         
     def crop_face(self):
-        """[summary]
+        """Crops every face from the image and displays it as a new photo 
+        in a new window where it can be saved
         """
         faces = self.face_cascade.detectMultiScale(self.gray, 1.3, 5)
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
@@ -237,7 +244,7 @@ class ImageProcessor(Frame):
 
             
     def crop_img(self):
-        """[summary]
+        """Crops the image in 4:3 format
         """
         self.cv2img = self.cv2img[0:300, 0:400]
         crop_image = Image.fromarray(self.cv2img)
@@ -248,7 +255,7 @@ class ImageProcessor(Frame):
 
         
     def exitProgram(self):
-        """[summary]
+        """Exits the program
         """
         os._exit(0)
         
