@@ -2,18 +2,6 @@
 from PIL import Image
 import tkinter as tk
 
-
-# path = '~/kea/python/imageprocessing/'
-# # Open an Image
-# def open_image(path):
-#     newImage = Image.open(path)
-#     return newImage
-
-# # Save Image
-# def save_image(image, path):
-#     image.save(path, 'png')
-
-
 # Create a new image with the given size
 def create_image(i, j):
     image = Image.new("RGB", (i, j), "white")
@@ -173,27 +161,3 @@ def convert_primary(image):
     # Return new image
     return new
 
-
-# Main
-# if __name__ == "__main__":
-#     # Load Image (JPEG/JPG needs libjpeg to load)
-#     original = open_image('mario.png')
-
-#     # Example Pixel Color
-#     print('Color: ' + str(get_pixel(original, 0, 0)))
-
-#     # Convert to Grayscale and save
-#     new = convert_grayscale(original)
-#     save_image(new, 'Prinny_gray.png')
-
-#     # Convert to Halftoning and save
-#     new = convert_halftoning(original)
-#     save_image(new, 'Prinny_half.png')
-
-#     # Convert to Dithering and save
-#     new = convert_dithering(original)
-#     save_image(new, 'Prinny_dither.png')
-
-#     # Convert to Primary and save
-#     new = convert_primary(original)
-#     save_image(new, 'Prinny_primary.png')
