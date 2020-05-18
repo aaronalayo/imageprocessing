@@ -98,6 +98,7 @@ class ImageProcessor(Frame):
         height_new = int(self.cv2img.shape[0] * scale_percent)
         dim = (width_new, height_new)
         self.cv2img = cv2.resize(self.cv2img,dim, interpolation = cv2.INTER_AREA)
+        self.original = self.cv2img.copy()
         # Converts image from OpenCV to Pil Image
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
@@ -112,7 +113,7 @@ class ImageProcessor(Frame):
         """Shows original image
         It changes the image to its first state
         """
-        self.cv2img = self.states[0]
+        self.cv2img = self.original
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
