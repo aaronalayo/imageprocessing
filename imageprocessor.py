@@ -38,6 +38,7 @@ class ImageProcessor(Frame):
         editMenu = Menu(filebar)
         filebar.add_cascade(label= "Edit", menu= editMenu)
         editMenu.add_command(label="Undo", command = self.undo)
+        editMenu.add_command(label="Redo", command = self.redo)
 
         imageMenu = Menu(filebar)
         filebar.add_cascade(label= "Image", menu= imageMenu)
@@ -65,6 +66,7 @@ class ImageProcessor(Frame):
         self.txt.pack(fill=BOTH, expand=1)
 
         self.states=[]
+        self.states_redo=[]
 
     
     def undo(self):
@@ -76,8 +78,17 @@ class ImageProcessor(Frame):
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
+        self.states_redo.append(self.states[-1])
         del self.states[-1]
 
+    def redo(self):
+        self.cv2img = self.states_redo[-1]
+        self.states.append(self.cv2img)
+        image = Image.fromarray(self.cv2img)
+        image = ImageTk.PhotoImage(image)
+        self.panel.configure(image = image)
+        self.panel.image = image
+        del self.states_redo[-1]
 
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
