@@ -82,13 +82,16 @@ class ImageProcessor(Frame):
         del self.states[-1]
 
     def redo(self):
-        self.cv2img = self.states_redo[-1]
-        self.states.append(self.cv2img)
-        image = Image.fromarray(self.cv2img)
-        image = ImageTk.PhotoImage(image)
-        self.panel.configure(image = image)
-        self.panel.image = image
-        del self.states_redo[-1]
+            try:
+                self.cv2img = self.states_redo[-1]
+                self.states.append(self.cv2img)
+                image = Image.fromarray(self.cv2img)
+                image = ImageTk.PhotoImage(image)
+                self.panel.configure(image=image)
+                self.panel.image = image
+                del self.states_redo[-1]
+            except (IndexError):
+                return None
 
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
