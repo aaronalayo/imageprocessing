@@ -86,6 +86,9 @@ class ImageProcessor(Frame):
         del self.states[-1]
 
     def redo(self):
+        """Method to redo an action after undoing it.
+        It changes the image to its previous state which is saved in a list.
+        """
         try:
             self.cv2img = self.states_redo[-1]
             self.states.append(self.cv2img)
