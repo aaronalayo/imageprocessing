@@ -1,10 +1,13 @@
 import tkinter as tk
 import cv2
-from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Button
+from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Button, Entry
 from PIL import ImageTk, Image
 import numpy as np
 import os
 import filters
+
+
+
 
 class ImageProcessor(Frame):
     """Image processor app 
@@ -65,8 +68,15 @@ class ImageProcessor(Frame):
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
 
+        self.entry = Entry(root)
+        self.entry.pack(side="right")
+        self.b = Button(root,text='okay',command=self.increase_brightness)
+        self.b.pack(side='right')
+
         self.states=[]
-        self.states_redo=[]
+        self.states_redo=[] 
+
+        self.drawing = False
 
     
     def undo(self):
@@ -79,7 +89,8 @@ class ImageProcessor(Frame):
         self.panel.configure(image = image)
         self.panel.image = image
         self.states_redo.append(self.states[-1])
-        del self.states[-1]
+        #del self.states[-1]
+        self.states.pop()           
 
     def redo(self):
         self.cv2img = self.states_redo[-1]
@@ -88,7 +99,8 @@ class ImageProcessor(Frame):
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image = image)
         self.panel.image = image
-        del self.states_redo[-1]
+        #del self.states_redo[-1]
+        self.states_redo.pop()
 
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
@@ -267,6 +279,24 @@ class ImageProcessor(Frame):
         self.panel.image = crop_image
         self.states.append(self.cv2img)
 
+    
+    def increase_brightness(self):
+        value = int (self.entry.get())
+        hsv = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+
+        lim = 255 - value
+        v[v > lim] = 255
+        v[v <= lim] += value
+
+        final_hsv = cv2.merge((h, s, v))
+        self.cv2img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        
+        bright_image = Image.fromarray(self.cv2img)
+        bright_image = ImageTk.PhotoImage(bright_image)
+        self.panel.configure(image = bright_image)
+        self.panel.image = bright_image
+        self.states.append(self.cv2img)
         
     def exitProgram(self):
         """Exits the program
