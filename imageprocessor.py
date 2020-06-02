@@ -10,19 +10,18 @@ import filters
 
 
 class ImageProcessor(Frame):
-    """Image processor app 
-    features: Open, Save, Quit, Undo, Add filters, Manipulate Image, Face detection 
+    """Image processor app
+    features: Open, Save, Quit, Undo, Add filters, Manipulate Image, Face detection
     Arguments:
         Frame {[Tkinter]} -- [description]
     """
 
     def __init__(self, parent):
-        Frame.__init__(self, parent)   
+        Frame.__init__(self, parent)
 
-        self.parent = parent        
+        self.parent = parent
         self.initUI()
-        
-      
+
     def initUI(self):
         """Initiates the UI
         """
@@ -31,40 +30,45 @@ class ImageProcessor(Frame):
 
         filebar = Menu(self.parent)
         self.parent.config(menu=filebar)
-      
+
         fileMenu = Menu(filebar)
         filebar.add_cascade(label="File", menu=fileMenu)
         fileMenu.add_command(label="Open", command=self.open_img)
-        fileMenu.add_command(label="Save", command =self.save_img)
-        fileMenu.add_command(label="Quit", command =self.exitProgram)
+        fileMenu.add_command(label="Save", command=self.save_img)
+        fileMenu.add_command(label="Quit", command=self.exitProgram)
 
         editMenu = Menu(filebar)
-        filebar.add_cascade(label= "Edit", menu= editMenu)
-        editMenu.add_command(label="Undo", command = self.undo)
-        editMenu.add_command(label="Redo", command = self.redo)
+        filebar.add_cascade(label="Edit", menu=editMenu)
+        editMenu.add_command(label="Undo", command=self.undo)
+        editMenu.add_command(label="Redo", command=self.redo)
 
         imageMenu = Menu(filebar)
-        filebar.add_cascade(label= "Image", menu= imageMenu)
-        imageMenu.add_command(label= "Rotate Right", command= self.rotate_right_img)
-        imageMenu.add_command(label= "Rotate Left", command= self.rotate_left_img)
-        imageMenu.add_command(label= "Crop 4:3", command= self.crop_img)
-        imageMenu.add_command(label= "Face detection", command= self.face_detect)
+        filebar.add_cascade(label="Image", menu=imageMenu)
+        imageMenu.add_command(label="Rotate Right",
+                              command=self.rotate_right_img)
+        imageMenu.add_command(label="Rotate Left",
+                              command=self.rotate_left_img)
+        imageMenu.add_command(label="Crop 4:3", command=self.crop_img)
+        imageMenu.add_command(label="Face detection", command=self.face_detect)
 
         filtersMenu = Menu(filebar)
-        filebar.add_cascade(label= "Filters", menu= filtersMenu)
-        filtersMenu.add_command(label= "Dither", command= self.call_filters_ditter)
-        filtersMenu.add_command(label= "Gray Scale", command= self.call_convert_grayscale)
-        filtersMenu.add_command(label= "Primary", command= self.call_convert_primary)
+        filebar.add_cascade(label="Filters", menu=filtersMenu)
+        filtersMenu.add_command(
+            label="Dither", command=self.call_filters_ditter)
+        filtersMenu.add_command(
+            label="Gray Scale", command=self.call_convert_grayscale)
+        filtersMenu.add_command(
+            label="Primary", command=self.call_convert_primary)
 
-        filebar.add_cascade(label="Original image", command=self.show_original_img)
+        filebar.add_cascade(label="Original image",
+                            command=self.show_original_img)
 
-        self.btn = Button(root, text = 'Crop faces', command = self.crop_face)
+        self.btn = Button(root, text='Crop faces', command=self.crop_face)
         self.btn.pack_forget()
 
         self.panel = Label(root)
         self.panel.place(relx=.5, rely=.5, anchor="c")
-        
-        
+
         self.txt = Text(self)
         self.txt.pack(fill=BOTH, expand=1)
 
@@ -76,9 +80,7 @@ class ImageProcessor(Frame):
         self.states=[]
         self.states_redo=[] 
 
-        self.drawing = False
 
-    
     def undo(self):
         """Method to undo an action applied to an image
         It changes the image to its previous state which is saved in a list.
@@ -86,21 +88,28 @@ class ImageProcessor(Frame):
         self.cv2img = self.states[-2]
         image = Image.fromarray(self.cv2img)
         image = ImageTk.PhotoImage(image)
-        self.panel.configure(image = image)
+        self.panel.configure(image=image)
         self.panel.image = image
         self.states_redo.append(self.states[-1])
         #del self.states[-1]
         self.states.pop()           
 
     def redo(self):
-        self.cv2img = self.states_redo[-1]
-        self.states.append(self.cv2img)
-        image = Image.fromarray(self.cv2img)
-        image = ImageTk.PhotoImage(image)
-        self.panel.configure(image = image)
-        self.panel.image = image
-        #del self.states_redo[-1]
-        self.states_redo.pop()
+        """Method to redo an action after undoing it.
+        It changes the image to its previous state which is saved in a list.
+        """
+        try:
+            self.cv2img = self.states_redo[-1]
+            self.states.append(self.cv2img)
+            image = Image.fromarray(self.cv2img)
+            image = ImageTk.PhotoImage(image)
+            self.panel.configure(image=image)
+            self.panel.image = image
+            del self.states_redo[-1]
+        except (IndexError):
+            return None
+
+                               
 
     def openfn(self):
         filename = filedialog.askopenfilename(title='open')
@@ -128,7 +137,7 @@ class ImageProcessor(Frame):
         self.panel.configure(image = image)
         self.panel.image = image
 
-        #appends current image state to the list
+        # appends current image state to the list
         self.states.append(self.cv2img)
         
     
@@ -236,7 +245,7 @@ class ImageProcessor(Frame):
         self.panel.configure(image = faceimg)
         self.panel.image = faceimg
         
-        #makes the button for crop faces visible
+        # makes the button for crop faces visible
         self.btn.pack(side = 'right')
 
         self.states.append(self.cv2img)
