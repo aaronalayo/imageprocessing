@@ -49,6 +49,7 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label="Rotate Left",
                               command=self.rotate_left_img)
         imageMenu.add_command(label="Crop 4:3", command=self.crop_img)
+        imageMenu.add_command(label="Crop", command=self.crop)
         imageMenu.add_command(label="Face detection", command=self.face_detect)
 
         filtersMenu = Menu(filebar)
@@ -80,7 +81,54 @@ class ImageProcessor(Frame):
         self.states=[]
         self.states_redo=[] 
 
+    # ix = 0
+    # iy = 0
+    refPt = []
+    def on_mouse(self, event, x, y, flags, params):
+        # global ix, iy
+        global refPt
 
+        if event == cv2.EVENT_LBUTTONDOWN:
+            print('Start Mouse Position: '+str(x)+', '+str(y))
+            # ix = x
+            # iy = y
+            refPt = [(x, y)]
+
+        elif event == cv2.EVENT_LBUTTONUP:
+            print('End Mouse Position: '+str(x)+', '+str(y))
+            # self.cv2img = cv2.rectangle(self.cv2img,pt1=(ix,iy),pt2=(x,y),color=(255,0,0),thickness=3)
+            refPt.append((x, y))
+            self.cv2img = cv2.rectangle(self.cv2img, refPt[0], refPt[1], (0, 255, 0), 2)
+            
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            cv2.imshow('real image', self.cv2img)
+
+
+    def crop(self):
+        cv2.namedWindow('real image')
+        #cv2.imshow('real image', self.cv2img)
+        cv2.setMouseCallback('real image', self.on_mouse, 0)
+        
+            
+        while True:
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            cv2.imshow('real image', self.cv2img)
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:
+                cv2.destroyWindow('real image')
+                break
+        
+        if len(refPt) == 2:
+            roi = self.cv2img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
+            cv2.imshow('roi', roi)
+            image = Image.fromarray(roi)
+            image = ImageTk.PhotoImage(image)
+            self.panel.configure(image=image)
+            self.panel.image = image
+            cv2.waitKey(0)
+            
+            
+   
     def undo(self):
         """Method to undo an action applied to an image
         It changes the image to its previous state which is saved in a list.
