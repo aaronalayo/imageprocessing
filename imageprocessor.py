@@ -56,6 +56,7 @@ class ImageProcessor(Frame):
         filebar.add_cascade(label="Filters", menu=filtersMenu)
         filtersMenu.add_command(
             label="Dither", command=self.call_filters_ditter)
+        
         filtersMenu.add_command(
             label="Gray Scale", command=self.call_convert_grayscale)
         filtersMenu.add_command(
@@ -133,14 +134,17 @@ class ImageProcessor(Frame):
         """Method to undo an action applied to an image
         It changes the image to its previous state which is saved in a list.
         """
-        self.cv2img = self.states[-2]
-        image = Image.fromarray(self.cv2img)
-        image = ImageTk.PhotoImage(image)
-        self.panel.configure(image=image)
-        self.panel.image = image
-        self.states_redo.append(self.states[-1])
-        #del self.states[-1]
-        self.states.pop()           
+        try:
+            self.cv2img = self.states[-2]
+            image = Image.fromarray(self.cv2img)
+            image = ImageTk.PhotoImage(image)
+            self.panel.configure(image=image)
+            self.panel.image = image
+            self.states_redo.append(self.states[-1])
+            # del self.states[-1]
+            self.states.pop()    
+        except (IndexError):
+            return None       
 
     def redo(self):
         """Method to redo an action after undoing it.
@@ -355,12 +359,13 @@ class ImageProcessor(Frame):
         self.panel.image = bright_image
         self.states.append(self.cv2img)
         
+            
     def exitProgram(self):
         """Exits the program
         """
         os._exit(0)
         
-        
+
 if __name__ == '__main__':
 
     root=Tk()
