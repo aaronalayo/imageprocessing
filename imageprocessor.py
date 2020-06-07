@@ -1,4 +1,3 @@
-# import tkinter as tk
 import cv2
 from tkinter import Frame, Tk, BOTH, Text, Menu, END, filedialog, Label, Button, Entry
 from PIL import ImageTk, Image
@@ -43,6 +42,7 @@ class ImageProcessor(Frame):
 
         imageMenu = Menu(filebar)
         filebar.add_cascade(label="Image", menu=imageMenu)
+        imageMenu.add_command(label="Original image", command=self.show_original_img)
         imageMenu.add_command(label="Rotate Right",
                               command=self.rotate_right_img)
         imageMenu.add_command(label="Rotate Left",
@@ -50,9 +50,12 @@ class ImageProcessor(Frame):
         imageMenu.add_command(label="Crop 4:3", command=self.crop_img)
         imageMenu.add_command(label="Crop", command=self.crop)
         imageMenu.add_command(label="Face detection", command=self.face_detect)
+        
+
 
         filtersMenu = Menu(filebar)
         filebar.add_cascade(label="Filters", menu=filtersMenu)
+        
         filtersMenu.add_command(
             label="Dither", command=self.call_filters_ditter)
 
@@ -60,9 +63,9 @@ class ImageProcessor(Frame):
             label="Gray Scale", command=self.call_convert_grayscale)
         filtersMenu.add_command(
             label="Primary", command=self.call_convert_primary)
+        
 
-        filebar.add_cascade(label="Original image",
-                            command=self.show_original_img)
+        
 
         self.btn = Button(root, text='Crop faces', command=self.crop_face)
         self.btn.pack_forget()
@@ -97,31 +100,38 @@ class ImageProcessor(Frame):
             refPt.append((x, y))
             self.cv2img = cv2.rectangle(
                 self.cv2img, refPt[0], refPt[1], (0, 255, 0), 2)
-
-            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-            cv2.imshow('real image', self.cv2img)
+        self.cv2img = self.cv2img[:, :, ::-1]
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+        cv2.imshow('real image', self.cv2img)         
 
     def crop(self):
         cv2.namedWindow('real image')
         cv2.setMouseCallback('real image', self.on_mouse, 0)
-
+        
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         while True:
+            self.cv2img = self.cv2img[:, :, ::-1]
             self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
             cv2.imshow('real image', self.cv2img)
             key = cv2.waitKey(1) & 0xFF
             if key == 27:
                 cv2.destroyWindow('real image')
                 break
-
+        
         if len(refPt) == 2:
-            roi = self.cv2img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
-            cv2.imshow('roi', roi)
-            image = Image.fromarray(roi)
+            self.cv2img = self.cv2img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            self.cv2img = self.cv2img[:, :, ::-1]       
+            cv2.imshow('Press esc to display in panel', self.cv2img)
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            image = Image.fromarray(self.cv2img)
             image = ImageTk.PhotoImage(image)
             self.panel.configure(image=image)
             self.panel.image = image
             cv2.waitKey(0)
-
+            self.states.append(self.cv2img)
+              
+        cv2.destroyAllWindows()  
     def undo(self):
         """Method to undo an action applied to an image
         It changes the image to its previous state which is saved in a list.
@@ -179,7 +189,7 @@ class ImageProcessor(Frame):
         image = ImageTk.PhotoImage(image)
         self.panel.configure(image=image)
         self.panel.image = image
-
+        
         # appends current image state to the list
         self.states.append(self.cv2img)
 
