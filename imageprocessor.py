@@ -99,7 +99,7 @@ class ImageProcessor(Frame):
             print('End Mouse Position: '+str(x)+', '+str(y))
             refPt.append((x, y))
             self.cv2img = cv2.rectangle(
-                self.cv2img, refPt[0], refPt[1], (0, 255, 0), 2)
+                self.cv2img, refPt[0], refPt[1], (0, 0, 0), 2)
         self.cv2img = self.cv2img[:, :, ::-1]
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         cv2.imshow('real image', self.cv2img)         
