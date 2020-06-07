@@ -79,8 +79,6 @@ def get_saturation(value, quadrant):
 def convert_dithering(image):
     # Get size
     width, height = image.size
-    # print(image.size)
-
     # Create new Image and a Pixel Map
     new = create_image(width, height)
     pixels = new.load()
@@ -117,7 +115,6 @@ def convert_dithering(image):
             pixels[i + 1, j + 1] = (r[3], g[3], b[3])
     
     # Return new image
-    # save_image(new, 'Prinny_dither.png')
     return new
 
 
