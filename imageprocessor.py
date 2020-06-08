@@ -88,6 +88,9 @@ class ImageProcessor(Frame):
     refPt = []
 
     def on_mouse(self, event, x, y, flags, params):
+        """Defines the region of interest 
+        by moving the mouse.
+        """
      
         global refPt
 
@@ -104,36 +107,9 @@ class ImageProcessor(Frame):
         self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
         cv2.imshow('real image', self.cv2img)         
 
-    def crop(self):
-        cv2.namedWindow('real image')
-        cv2.setMouseCallback('real image', self.on_mouse, 0)
-        
-        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-        while True:
-            self.cv2img = self.cv2img[:, :, ::-1]
-            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-            cv2.imshow('real image', self.cv2img)
-            key = cv2.waitKey(1) & 0xFF
-            if key == 27:
-                cv2.destroyWindow('real image')
-                break
-        
-        if len(refPt) == 2:
-            self.cv2img = self.cv2img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
-            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-            self.cv2img = self.cv2img[:, :, ::-1]       
-            cv2.imshow('Press esc to display in panel', self.cv2img)
-            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
-            image = Image.fromarray(self.cv2img)
-            image = ImageTk.PhotoImage(image)
-            self.panel.configure(image=image)
-            self.panel.image = image
-            cv2.waitKey(0)
-            self.states.append(self.cv2img)
-              
-        cv2.destroyAllWindows()  
+    
     def undo(self):
-        """Method to undo an action applied to an image
+        """Function to undo an action applied to an image
         It changes the image to its previous state which is saved in a list.
         """
         try:
@@ -149,7 +125,7 @@ class ImageProcessor(Frame):
             return None
 
     def redo(self):
-        """Method to redo an action after undoing it.
+        """Function to redo an action after undoing it.
         It changes the image to its previous state which is saved in a list.
         """
         try:
@@ -225,7 +201,7 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
 
     def call_filters_ditter(self):
-        """Calls the method convert_dithering in filters.py which returns a Pil dithered image
+        """Calls the function convert_dithering in filters.py which returns a Pil dithered image
         """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_dithering(image)
@@ -238,7 +214,7 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
 
     def call_convert_grayscale(self):
-        """Calls the method convert_grayscale in filters.py which returns a Pil grayscaled image
+        """Calls the function convert_grayscale in filters.py which returns a Pil grayscaled image
         """
         image = Image.fromarray(self.cv2img)
         im = filters.convert_grayscale(image)
@@ -251,7 +227,7 @@ class ImageProcessor(Frame):
         self.states.append(self.cv2img)
 
     def call_convert_primary(self):
-        """Calls the method convert_primary in filters.py 
+        """Calls function convert_primary in filters.py 
         which returns a Pil image with only primary colors
         """
         image = Image.fromarray(self.cv2img)
@@ -337,8 +313,43 @@ class ImageProcessor(Frame):
         self.panel.configure(image=crop_image)
         self.panel.image = crop_image
         self.states.append(self.cv2img)
-
+        
+    def crop(self):
+        """User crops the image to a desired format,
+        by drawing a rectangle with the mouse.
+        """
+        cv2.namedWindow('real image')
+        cv2.setMouseCallback('real image', self.on_mouse, 0)
+        
+        self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+        while True:
+            self.cv2img = self.cv2img[:, :, ::-1]
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            cv2.imshow('real image', self.cv2img)
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:
+                cv2.destroyWindow('real image')
+                break
+        
+        if len(refPt) == 2:
+            self.cv2img = self.cv2img[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            self.cv2img = self.cv2img[:, :, ::-1]       
+            cv2.imshow('Press esc to display in panel', self.cv2img)
+            self.cv2img = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2RGB)
+            image = Image.fromarray(self.cv2img)
+            image = ImageTk.PhotoImage(image)
+            self.panel.configure(image=image)
+            self.panel.image = image
+            cv2.waitKey(0)
+            self.states.append(self.cv2img)         
+        cv2.destroyAllWindows()  
+        
     def increase_brightness(self):
+        """User can change the brightness of the image,
+        by entering some value.
+        """
+        
         value = int(self.entry.get())
         hsv = cv2.cvtColor(self.cv2img, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
@@ -363,7 +374,6 @@ class ImageProcessor(Frame):
 
 
 if __name__ == '__main__':
-
     root = Tk()
     ph = ImageProcessor(root)
     root.geometry("1920x1060")

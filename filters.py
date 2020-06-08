@@ -20,8 +20,6 @@ def get_pixel(image, i, j):
     return pixel
 
 # Create a Grayscale version of the image
-
-
 def convert_grayscale(image):
     # Get size
     width, height = image.size
